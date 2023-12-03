@@ -4,6 +4,7 @@ import Foreign.C.Types (CULong)
 import Data.Int (Int64)
 
 type Bitboard = CULong
+data Side = White | Black
 
 -- Definitions of empty bitboard, files, and ranks bitboards
 
@@ -15,6 +16,16 @@ fileBitboard = shift 0b100000001000000010000000100000001000000010000000100000001
 
 rankBitboard :: Int -> Bitboard
 rankBitboard = shift 0b11111111
+
+getFile :: Bitboard -> Maybe Int
+getFile x
+    | popCount x > 1 = Nothing
+    | otherwise = Just $ popCount (x - 1) .&. 7
+
+getRank :: Bitboard -> Maybe Int
+getRank x
+    | popCount x > 1 = Nothing
+    | otherwise = Just $ shift (popCount $ x - 1) (-3)
 
 -- Shifts and neighbours
 
@@ -59,3 +70,6 @@ getSingleKingAttackBitboard board
             northNeighbour board .|.
             southNeighbour board .|.
             board
+
+-- getPawnPushMoves :: Bitboard -> Side -> Maybe Bitboard
+-- getPawnPushMoves board side = 
