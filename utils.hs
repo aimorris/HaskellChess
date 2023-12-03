@@ -1,6 +1,6 @@
 {-# LANGUAGE BinaryLiterals #-}
-import Data.Bits
-import Foreign.C.Types
+import Data.Bits ( Bits((.|.), (.&.), shift, complement) )
+import Foreign.C.Types (CULong)
 import Data.Int (Int64)
 
 type Bitboard = CULong
