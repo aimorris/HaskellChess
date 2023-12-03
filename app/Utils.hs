@@ -1,16 +1,18 @@
 {-# LANGUAGE BinaryLiterals #-}
 import Data.Bits
+import Data.Binary
+import qualified Data.Vector as V
 
-type Bitboard = Word
+type Bitboard = Word64
 data Side = White | Black
-type Board = [Bitboard]
+-- type Board = [Bitboard]
 
 -- Definitions of empty bitboard, files, ranks, and occupied bitboards
 
 emptyBitboard :: Bitboard
 emptyBitboard = zeroBits
 
-initialBoard :: Board
+-- initialBoard :: Board
 initialBoard = [whitePawnBitboard, whiteRookBitboard, whiteKnightBitboard, whiteBishopBitboard, whiteQueenBitboard, whiteKingBitboard,
                 blackPawnBitboard, blackRookBitboard, blackKnightBitboard, blackBishopBitboard, blackQueenBitboard, blackKingBitboard]
     where
