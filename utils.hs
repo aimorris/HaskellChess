@@ -5,11 +5,30 @@ import Data.Int (Int64)
 
 type Bitboard = CULong
 data Side = White | Black
+type Board = [Bitboard]
 
--- Definitions of empty bitboard, files, and ranks bitboards
+-- Definitions of empty bitboard, files, ranks, and occupied bitboards
 
-emptyBoard :: Bitboard
-emptyBoard = zeroBits
+emptyBitboard :: Bitboard
+emptyBitboard = zeroBits
+
+initialBoard :: Board
+initialBoard = [whitePawnBitboard, whiteRookBitboard, whiteKnightBitboard, whiteBishopBitboard, whiteQueenBitboard, whiteKingBitboard,
+                blackPawnBitboard, blackRookBitboard, blackKnightBitboard, blackBishopBitboard, blackQueenBitboard, blackKingBitboard]
+    where
+        whitePawnBitboard = 0b1111111100000000
+        whiteRookBitboard = 0b10000001
+        whiteKnightBitboard = 0b1000010
+        whiteBishopBitboard = 0b100100
+        whiteQueenBitboard = 0b1000
+        whiteKingBitboard = 0b10000
+        blackPawnBitboard = 0b11111111000000000000000000000000000000000000000000000000
+        blackRookBitboard = 0b1000000100000000000000000000000000000000000000000000000000000000
+        blackKnightBitboard = 0b100001000000000000000000000000000000000000000000000000000000000
+        blackBishopBitboard = 0b10010000000000000000000000000000000000000000000000000000000000
+        blackQueenBitboard = 0b100000000000000000000000000000000000000000000000000000000000
+        blackKingBitboard = 0b1000000000000000000000000000000000000000000000000000000000000
+    
 
 fileBitboard :: Int -> Bitboard
 fileBitboard = shift 0b100000001000000010000000100000001000000010000000100000001
@@ -26,6 +45,9 @@ getRank :: Bitboard -> Maybe Int
 getRank x
     | popCount x > 1 = Nothing
     | otherwise = Just $ shift (popCount $ x - 1) (-3)
+
+occupiedBitboard :: Board -> Bitboard
+occupiedBitboard = foldr (.|.) 0b0
 
 -- Shifts and neighbours
 
@@ -71,5 +93,7 @@ getSingleKingAttackBitboard board
             southNeighbour board .|.
             board
 
--- getPawnPushMoves :: Bitboard -> Side -> Maybe Bitboard
--- getPawnPushMoves board side = 
+getSinglePawnPushMoves :: Bitboard -> Side -> Maybe Bitboard
+getSinglePawnPushMoves board side
+    | popCount board > 1 = Nothing
+    -- | otherwise = Just $ northNeighbour board .&.
