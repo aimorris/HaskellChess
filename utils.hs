@@ -3,7 +3,7 @@ import Data.Bits
 import Foreign.C.Types (CULong)
 import Data.Int (Int64)
 
-type Bitboard = CULong
+type Bitboard = Word
 data Side = White | Black
 type Board = [Bitboard]
 
@@ -34,7 +34,7 @@ fileBitboard :: Int -> Bitboard
 fileBitboard = shift 0b100000001000000010000000100000001000000010000000100000001
 
 rankBitboard :: Int -> Bitboard
-rankBitboard = shift 0b11111111
+rankBitboard x = shift 0b11111111 (x * 8)
 
 getFile :: Bitboard -> Maybe Int
 getFile x
@@ -68,8 +68,8 @@ westNeighbour board = getShiftWithMask board (-1) (fileBitboard 7)
 
 -- Piece attack bitboards
 
-getSingleKnightAttackBitboard :: Bitboard -> Maybe Bitboard
-getSingleKnightAttackBitboard board
+getSingleKnightAttackTargets :: Bitboard -> Maybe Bitboard
+getSingleKnightAttackTargets board
     | popCount board > 1 = Nothing
     | otherwise = Just $
         getShiftWithMask board 10 (fileBitboard 0 .|. fileBitboard 1) .|.
@@ -81,8 +81,8 @@ getSingleKnightAttackBitboard board
         getShiftWithMask board (-15) (fileBitboard 0) .|.
         getShiftWithMask board (-6) (fileBitboard 0 .|. fileBitboard 1)
 
-getSingleKingAttackBitboard :: Bitboard -> Maybe Bitboard
-getSingleKingAttackBitboard board
+getSingleKingAttackTargets :: Bitboard -> Maybe Bitboard
+getSingleKingAttackTargets board
     | popCount board > 1 = Nothing
     | otherwise = Just $ xor board $
         eastNeighbour northSouthNeighbours .|.
@@ -93,7 +93,18 @@ getSingleKingAttackBitboard board
             southNeighbour board .|.
             board
 
-getSinglePawnPushMoves :: Bitboard -> Side -> Maybe Bitboard
-getSinglePawnPushMoves board side
+getSinglePawnSinglePushTargets :: Bitboard -> Side -> Board -> Maybe Bitboard
+getSinglePawnSinglePushTargets board side currentBoard
     | popCount board > 1 = Nothing
-    -- | otherwise = Just $ northNeighbour board .&.
+    | otherwise = Just $ upNeighbour board .&. occupiedBitboard currentBoard
+    where upNeighbour = case side of
+            White -> northNeighbour
+            Black -> southNeighbour
+
+getSinglePawnDoublePushTargets :: Bitboard -> Side -> Board -> Maybe Bitboard
+getSinglePawnDoublePushTargets board side currentBoard
+    | popCount board > 1 = Nothing
+    | otherwise = Just $ upNeighbour (upNeighbour board) .&. occupiedBitboard currentBoard
+    where upNeighbour = case side of
+            White -> northNeighbour
+            Black -> southNeighbour
