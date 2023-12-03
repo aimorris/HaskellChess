@@ -1,7 +1,5 @@
 {-# LANGUAGE BinaryLiterals #-}
 import Data.Bits
-import Foreign.C.Types (CULong)
-import Data.Int (Int64)
 
 type Bitboard = Word
 data Side = White | Black
@@ -96,15 +94,24 @@ getSingleKingAttackTargets board
 getSinglePawnSinglePushTargets :: Bitboard -> Side -> Board -> Maybe Bitboard
 getSinglePawnSinglePushTargets board side currentBoard
     | popCount board > 1 = Nothing
-    | otherwise = Just $ upNeighbour board .&. occupiedBitboard currentBoard
-    where upNeighbour = case side of
+    | otherwise = Just $
+        upNeighbour board .&.
+        unoccupiedBitboard
+    where
+        upNeighbour = case side of
             White -> northNeighbour
             Black -> southNeighbour
+        unoccupiedBitboard = complement $ occupiedBitboard currentBoard
 
 getSinglePawnDoublePushTargets :: Bitboard -> Side -> Board -> Maybe Bitboard
 getSinglePawnDoublePushTargets board side currentBoard
     | popCount board > 1 = Nothing
-    | otherwise = Just $ upNeighbour (upNeighbour board) .&. occupiedBitboard currentBoard
-    where upNeighbour = case side of
+    | otherwise = Just $
+        upNeighbour (upNeighbour board .&. unoccupiedBitboard) .&.
+        unoccupiedBitboard .&.
+        rankBitboard 3
+    where
+        upNeighbour = case side of
             White -> northNeighbour
             Black -> southNeighbour
+        unoccupiedBitboard = complement $ occupiedBitboard currentBoard
