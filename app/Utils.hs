@@ -36,7 +36,7 @@ fileBitboard :: Int -> Bitboard
 fileBitboard = shift 0b100000001000000010000000100000001000000010000000100000001
 
 rankBitboard :: Int -> Bitboard
-rankBitboard x = shift 0b11111111 (x * 8)
+rankBitboard = shift 0b11111111 . (8 *)
 
 getFile :: Bitboard -> Maybe Int
 getFile x
