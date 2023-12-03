@@ -1,11 +1,13 @@
 {-# LANGUAGE BinaryLiterals #-}
+module Utils where
+
 import Data.Bits
 import Data.Binary
 import qualified Data.Vector as V
 
 type Bitboard = Word64
 data Side = White | Black
--- type Board = [Bitboard]
+type Board = [Bitboard]
 
 -- Definitions of empty bitboard, files, ranks, and occupied bitboards
 
